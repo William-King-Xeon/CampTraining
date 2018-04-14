@@ -36,11 +36,15 @@ LL Query(LL a1,LL d,LL l,LL r,LL s,LL t)
 
 int main()
 {
+    freopen("2461.in","r",stdin);
+    freopen("2461.out","w",stdout);
+
     scanf("%lld%lld",&n,&m);
     for (int i=1;i<=m;i++)
     {
         scanf("%lld%lld%lld%lld",&l,&r,&U,&V);
         printf("%lld\n",Query(1,1,1,n,l,r));
     }
+    
     return 0;
 }
