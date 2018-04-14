@@ -14,9 +14,9 @@ LL Calc(LL a1,LL d,LL &l,LL &r)
        v=( U<=a1 ? 0 : (U-1-a1)/d+1 );
 
     /* 等差数列前n项和 Sn=n(a1+an)/2 */
-    LL auplusav=/* au: */a1+u*d + /* av: */a1+v*d, /* 求au+aV */
+    LL auPLUSav=/* au: */a1+u*d + /* av: */a1+v*d, /* 求au+aV */
        N=v-u+1;/* 求n */
-    return N * auplusav / 2;
+    return N * auPLUSav / 2;
 }
 
 /*
