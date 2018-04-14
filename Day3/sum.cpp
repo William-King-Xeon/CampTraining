@@ -2,16 +2,16 @@
 
 typedef long long LL;
 
-LL n,l,r,U,V,m;
+LL n,m,L,R,U,V;
 
-LL Calc(LL a1,LL d,LL &l,LL &r)
+LL Calc(LL a1,LL d,LL l,LL r)
 {
     LL an=a1+(r-l)*d;
-    if (U>an||V<a1) return 0;
+    if (U>an || V<a1) return 0;
 
     /* 在这个等差数列内找到u和v使得U <= au,...,av <= V */
-    LL u=( V>=an ? r-l : (V-a1)/d ),
-       v=( U<=a1 ? 0 : (U-1-a1)/d+1 );
+    LL u=( U<=a1 ? 0 : (U-1-a1)/d+1 ),
+       v=( V>=an ? r-l : (V-a1)/d );
 
     /* 等差数列前n项和 Sn=n(a1+an)/2 */
     LL auPLUSav=/* au: */a1+u*d + /* av: */a1+v*d, /* 求au+aV */
@@ -42,9 +42,9 @@ int main()
     scanf("%lld%lld",&n,&m);
     for (int i=1;i<=m;i++)
     {
-        scanf("%lld%lld%lld%lld",&l,&r,&U,&V);
-        printf("%lld\n",Query(1,1,1,n,l,r));
+        scanf("%lld%lld%lld%lld",&L,&R,&U,&V);
+        printf("%lld\n",Query(1,1,1,n,L,R));
     }
-    
+
     return 0;
 }
