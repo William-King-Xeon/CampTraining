@@ -1,15 +1,22 @@
 #include <cstdio>
 #include <cstring>
+#include <map>
+#include <iostream>
+
+using namespace std;
 
 #define clean(x,v) (memset(x,v,sizeof(x)))
 
-int T,n,x,y,r,order[10005],f[10005][21],head[10005],root[10005];
-int cur,times,step;
+int n,m,r,order[100005],f[100005][25],head[100005],root[100005],
+	cur,times,step;
+string stra[100005],strb[100005],name[100005],x,y;
+
+map <string,int> num;
 
 struct EDGE
 {
 	int t,n;
-} edge[10005];
+} edge[100005];
 
 void AddEdge(int u,int v)
 {
@@ -35,7 +42,7 @@ void DFS(int cur,int father)
 int LCA(int x,int y)
 {
 	if (order[x]<order[y]) { int t=x;x=y;y=t; }
-	for (int i=14;i>=0;i--)
+	for (int i=20;i>=0;i--)
 		if (order[f[x][i]]>order[y]&&order[f[x][i]]!=0) x=f[x][i];
 	if (x==y) return x;
 	return f[x][0];
@@ -51,31 +58,33 @@ void Init()
 	clean(order,0);
 	return;
 }
+
 int main()
 {
-	scanf("%d",&T);
-	while (T--)
+	Init();
+
+	scanf("%d",&n);
+
+	int names=0;
+	for (int i=1;i<=n;i++)
 	{
-		Init();
-
-		scanf("%d",&n);
-		for (int i=1,a,b;i<n;i++)
-		{
-			scanf("%d%d",&a,&b);
-			AddEdge(a,b);
-			root[b]=false;
-		}
-
-		scanf("%d%d",&x,&y);
-		for (int i=1;i<=n;i++)
-			if (root[i]) { r=i;break;}
-		DFS(r,r);
-
-		for (int i=1;i<=14;i++)
-			for (int j=1;j<=n;j++)
-		    	f[j][i]=f[f[j][i-1]][i-1];
-
-		printf("%d\n",LCA(x,y));
+		cin >> stra[i] >> strb[i];
+		if (num[stra[i]]==0) { num[stra[i]]=++names;name[names]=stra[i]; }
+		if (num[strb[i]]==0) { num[strb[i]]=++names;name[names]=strb[i]; }
+		AddEdge(num[stra[i]],num[strb[i]]);
 	}
+
+	DFS(1,0);
+	for (int i=1;i<=20;i++)
+		for (int j=1;j<=names;j++)
+	    	f[j][i]=f[f[j][i-1]][i-1];
+
+	scanf("%d",&m);
+	for (int i=1;i<=m;i++)
+	{
+		cin >> x >> y;
+		cout << name[ LCA(num[x],num[y]) ].c_str() << endl;
+	}
+
 	return 0;
 }
