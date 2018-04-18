@@ -2,7 +2,7 @@
 #include <cmath>
 #define INF 1000000000
 
-int cur=-1,n,t,s,e,f[105][105][25],steps[1000005];
+int cur=-1,n,t,s,e,I,f[105][105][25],steps[1000005];
 
 int DFS(int s,int e,int n)
 {
@@ -10,22 +10,22 @@ int DFS(int s,int e,int n)
 
     if (f[s][e][step]!=INF || n==1)
     {
-        printf("%d %d %d F:%d\n",s,e,n,f[s][e][step]);
+        //printf("%d %d %d F:%d\n",s,e,n,f[s][e][step]);
         return f[s][e][step];
     }
     if (n&1)
     {
         int ret=INF;
-        for (int i=1,cur;i<=t;i++)
+        for (int i=1,cur;i<=I;i++)
             if (i!=s && i!=e && (cur=DFS(s,i,n-1))+f[s][i][0]<ret) ret=cur;
-        printf("%d %d %d F:%d\n",s,e,n,ret);
+        //printf("%d %d %d F:%d\n",s,e,n,ret);
         return ret;
     }
     else
     {
-        for (int i=1,cur;i<=t;i++)
+        for (int i=1,cur;i<=I;i++)
             if (i!=s && i!=e && (cur=DFS(s,i,n/2)+DFS(i,e,n/2))<f[s][e][step]) f[s][e][step]=cur;
-        printf("%d %d %d F:%d\n",s,e,n,f[s][e][step]);
+        //printf("%d %d %d F:%d\n",s,e,n,f[s][e][step]);
         return f[s][e][step];
     }
 }
@@ -42,15 +42,16 @@ int main()
     int tmp=n,stepnum=0;
     while (tmp!=1) { tmp/=2;stepnum++; }
     tmp=n;
-    for (int i=n;i>=0;i--)
+    while (tmp)
     {
-        if (tmp/2==i) stepnum--,tmp/=2;
-        steps[i]=stepnum;
+        steps[tmp]=stepnum;
+        stepnum--,tmp/=2;
     }
 
     for (int i=1,x,y,len;i<=t;i++)
     {
         scanf("%d%d%d",&len,&x,&y);
+        if (x>I) I=x;if (y>I) I=y;
         f[x][y][0]=f[y][x][0]=len;
     }
 
