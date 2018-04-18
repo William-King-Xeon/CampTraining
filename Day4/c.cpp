@@ -2,52 +2,38 @@
 #include <cmath>
 #define INF 1000000000
 
-int cur=-1,n,t,s,e,I,f[1005][1005][25],steps[1000005];
+int n,t,s,e,I,dis[1005][1005];
 
 int DFS(int s,int e,int n)
 {
-    int step=steps[n];
-
-    if (f[s][e][step]!=INF || n==1)
-        return f[s][e][step];
+    if (n==1) return dis[s][e];
+    int ret=INF;
     if (n&1)
     {
-        int ret=INF;
         for (int i=1,cur;i<=I;i++)
-            if (i!=s && i!=e && (cur=DFS(s,i,n-1))+f[s][i][0]<ret) ret=cur;
-        return ret;
+            if (i!=s && i!=e && (cur=(DFS(s,i,n-1)+dis[i][e]))<ret) ret=cur;
     }
     else
     {
         for (int i=1,cur;i<=I;i++)
-            if (i!=s && i!=e && (cur=DFS(s,i,n/2)+DFS(i,e,n/2))<f[s][e][step]) f[s][e][step]=cur;
-        return f[s][e][step];
+            if (i!=s && i!=e && (cur=DFS(s,i,n/2)+DFS(i,e,n/2))<ret) ret=cur;
     }
+    return ret;
 }
 
 int main()
 {
     for (int i=0;i<1005;i++)
         for (int j=0;j<1005;j++)
-            for (int k=0;k<25;k++)
-                f[i][j][k]=INF;
+            dis[i][j]=INF;
 
     scanf("%d%d%d%d",&n,&t,&s,&e);
-
-    int tmp=n,stepnum=0;
-    while (tmp!=1) { tmp/=2;stepnum++; }
-    tmp=n;
-    while (tmp)
-    {
-        steps[tmp]=stepnum;
-        stepnum--,tmp/=2;
-    }
 
     for (int i=1,x,y,len;i<=t;i++)
     {
         scanf("%d%d%d",&len,&x,&y);
         if (x>I) I=x;if (y>I) I=y;
-        f[x][y][0]=f[y][x][0]=len;
+        dis[x][y]=dis[y][x]=len;
     }
 
     printf("%d\n",DFS(s,e,n));

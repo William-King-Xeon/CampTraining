@@ -1,35 +1,54 @@
 #include <cstdio>
-#include <cstdlib>
-#include <ctime>
 #include <iostream>
 #include <algorithm>
 
+typedef unsigned long long ULL;
+
 using namespace std;
 
-long long n,N,m,ans,a[100005],tmp[100005];
-string S,t,str[100005],ps,qs;
+int n,m,ans,a[100005],tmp[100005];
+string S,t,ps,qs;
 bool sign[100005];
+ULL Hash[100005],POW[100005];
 
-void Merge_Sort(long long l,long long r)
+ULL GetHashValue(int x,int l)
+{
+    int y=x+l-1;
+    return Hash[y]-Hash[x-1]*POW[l];
+}
+
+bool BelowOrEqual(int x,int y)
+{
+    int l=0,r=m+1;
+
+    while (l+1<r)
+    {
+        int mid=(l+r)/2;
+        if (GetHashValue(x,mid)!=GetHashValue(y,mid)) r=mid;
+            else l=mid;
+    }
+
+    if (x+l>=n) return true;
+        else if (y+l>=n) return false;
+    return S[x+l]<=S[y+l];
+}
+
+void Merge_Sort(int l,int r)
 {
     if (l>=r) return;
 
-    long long mid=(l+r)/2;
+    int mid=(l+r)/2;
     Merge_Sort(l,mid);
     Merge_Sort(mid+1,r);
 
-    long long p=l,q=mid+1,k=l;
+    int p=l,q=mid+1,k=l;
     while (p<=mid && q<=r)
-    {
-        if (sign[a[p]]) ps=str[a[p]]; else ps=S.substr(a[p],m);
-        if (sign[a[q]]) qs=str[a[q]]; else qs=S.substr(a[q],m);
-        if (ps<=qs) tmp[k++]=a[p++];
+        if (BelowOrEqual(a[p],a[q])) tmp[k++]=a[p++];
             else
             {
                 tmp[k++]=a[q++];
                 ans+=mid-p+1;
             }
-    }
 
     while (p<=mid) tmp[k++]=a[p++];
     while (q<=r)   tmp[k++]=a[q++];
@@ -40,21 +59,19 @@ void Merge_Sort(long long l,long long r)
 
 int main()
 {
-    //freopen("2464.in","r",stdin);
-    //freopen("2464.out","w",stdout);
+    freopen("2464.in","r",stdin);
+    freopen("2464.out","w",stdout);
 
-    srand(time(NULL));
-
-    scanf("%lld%lld",&n,&m);
+    scanf("%d%d",&n,&m);
     cin >> S;
 
-    for (int i=0;i<n;i++)
-        if (!rand()%5) str[i]=S.substr(i,m),sign[i]=true;
+    for (int i=0;i<S.size();i++) Hash[i]=Hash[i-1]*31+(S[i]-'a'+1);
+    POW[0]=1;
+    for (int i=1;i<=m;i++) POW[i]=POW[i-1]*31;
 
     for (int i=0;i<n;i++) a[i]=i;
     Merge_Sort(0,n-1);
 
-    printf("%lld\n",ans);
-
+    printf("%d\n",ans);
     return 0;
 }
