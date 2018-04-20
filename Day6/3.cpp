@@ -1,7 +1,7 @@
 #include <cstdio>
-#define INF 100000000
+#define INF 500000000
 
-int n,m,dis[25][25],set1[1000005],set2[1000005],setn1,setn2,f[25][1050000],g[25][1050000];
+int n,m,dis[25][25],f[25][1050000],g[25][1050000];
 
 int CntOne(int x)
 {
@@ -16,17 +16,12 @@ int CntOne(int x)
 
 int main()
 {
+    freopen("2468.in","r",stdin);
+    freopen("2468.out","w",stdout);
+
     scanf("%d%d",&n,&m);
 
-    for (int i=0;i<(1<<n);i++)
-        if ((i&1) && (CntOne(i)<=n/2+1) && (CntOne(i)>1)) set1[setn1++]=i;
-
-    for (int i=0;i<(1<<n);i++)
-        if ((i&(1<<(n-1))) && (CntOne(i)<=(n+1)/2+1) && (CntOne(i)>1)) set2[setn2++]=i;
-
-    for (int i=0;i<n;i++)
-        for (int j=0;j<n;j++)
-            dis[i][j]=INF;
+    int N=n-2;
 
     for (int i=1,x,y,z;i<=m;i++)
     {
@@ -34,69 +29,74 @@ int main()
         dis[x][y]=dis[y][x]=z;
     }
 
+    for (int i=0;i<n;i++)
+        for (int j=0;j<n;j++)
+            dis[i][j]=INF;
+
     for (int s=0;s<n;s++)
         for (int mid=0;mid<n;mid++)
             for (int e=0;e<n;e++)
                 if (dis[s][mid]+dis[mid][e]<dis[s][e])
                     dis[s][e]=dis[s][mid]+dis[mid][e];
 
-    for (int i=0;i<n;i++)
-        for (int j=0;j<setn1;j++)
-            f[i][set1[j]]=INF;
+    if (n==3)
+    {
+        printf("%d ",(dis[0][1]+dis[1][2])*2);
+        return 0;
+    }
 
-    f[0][1]=0;
+    for (int i=0;i<N;i++)
+        for (int j=0;j<(1<<N);j++)
+            f[i][j]=INF;
 
-    for (int i=0;i<setn1;i++)
-        for (int e=1;e<n;e++)
-            if (set1[i]&(1<<e))
-                for (int last=0;last<n;last++)
-                    if (set1[i]&(1<<last))
-                        if (last!=e)
-                            if (f[last][set1[i]-(1<<e)]+dis[last][e]<f[e][set1[i]])
-                                f[e][set1[i]]=f[last][set1[i]-(1<<e)]+dis[last][e];
+    for (int i=0;i<N;i++)
+        f[i][1<<i]=dis[0][i+1];
 
-    for (int i=0;i<n;i++)
-        for (int j=0;j<setn2;j++)
-            g[i][set2[j]]=INF;
+    for (int set=0;set<(1<<N);set++)
+        if (CntOne(set)!=1)
+            for (int e=0;e<N;e++)
+                if (set&(1<<e))
+                    for (int last=0;last<N;last++)
+                        if (set&(1<<last))
+                            if (last!=e)
+                                if (f[last][set-(1<<e)]+dis[last+1][e+1]<f[e][set])
+                                    f[e][set]=f[last][set-(1<<e)]+dis[last+1][e+1];
 
-    g[n-1][1<<(n-1)]=0;
+    for (int i=0;i<N;i++)
+        for (int j=0;j<(1<<N);j++)
+            g[i][j]=INF;
 
-    for (int i=0;i<setn2;i++)
-        for (int s=0;s<n-1;s++)
-            if (set2[i]&(1<<s))
-                for (int last=0;last<n;last++)
-                    if (set2[i]&(1<<last))
-                        if (last!=s)
-                            if (g[last][set2[i]-(1<<s)]+dis[s][last]<g[s][set2[i]])
-                                g[s][set2[i]]=g[last][set2[i]-(1<<s)]+dis[s][last];
+    for (int i=0;i<N;i++)
+        g[i][1<<i]=dis[i+1][n-1];
+
+    for (int set=0;set<(1<<N);set++)
+        if (CntOne(set)!=1)
+            for (int s=0;s<N;s++)
+                if (set&(1<<s))
+                    for (int last=0;last<N;last++)
+                        if (set&(1<<last))
+                            if (last!=s)
+                                if (g[last][set-(1<<s)]+dis[s+1][last+1]<g[s][set])
+                                    g[s][set]=g[last][set-(1<<s)]+dis[s+1][last+1];
 
     int ans=INF;
-    for (int seti=0;seti<setn1;seti++)
-    {
-        int fset=set1[seti];
-        int gset=((1<<n)-1)^fset;
-        if (CntOne(fset)==n/2)
+    for (int fset=0;fset<(1<<N);fset++)
+        if (CntOne(fset)==N/2)
         {
-            int a=INF,b=INF;
-            for (int i=1;i<n-1;i++)
+            int gset=((1<<N)-1)^fset,
+                a=INF,b=INF;
+            for (int i=0;i<N;i++)
                 if (fset&(1<<i))
-                    for (int j=1;j<n-1;j++)
-                        if ((gset&(1<<j)) && i!=j)
-                            if (f[i][fset|1]+dis[i][j]+g[j][gset|(1<<(n-1))]<a)
-                                a=f[i][fset|1]+dis[i][j]+g[j][gset|(1<<(n-1))];
-            for (int i=1;i<n-1;i++)
-                if (fset&(1<<i))
-                    for (int j=1;j<n-1;j++)
-                        if ((gset&(1<<j)) && i!=j)
-                            if (g[i][fset|(1<<(n-1))]+dis[i][j]+f[j][gset|1]<b)
-                                b=g[i][fset|(1<<(n-1))]+dis[i][j]+f[j][gset|1];
-            if (a+b<ans)
-            {
-                printf("%d %d\n",a,b);
-                ans=a+b;
-            }
+                    for (int j=0;j<N;j++)
+                        if ((gset&(1<<j)))
+                        {
+                            if (f[i][fset]+dis[i+1][j+1]+g[j][gset]<a)
+                                a=f[i][fset]+dis[i+1][j+1]+g[j][gset];
+                            if (g[i][fset]+dis[i+1][j+1]+f[j][gset]<b)
+                                b=g[i][fset]+dis[i+1][j+1]+f[j][gset];
+                        }
+            if (a+b<ans) ans=a+b;
         }
-    }
     printf("%d\n",ans);
 
     return 0;
