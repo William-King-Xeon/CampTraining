@@ -23,13 +23,11 @@ int main()
     for (int i=1,u,v,t;i<=q;i++)
     {
         scanf("%d%d%d",&u,&v,&t);
-        int uc=0,vc=0,times=0;
+        int uc=0,vc=0;
         while (uc==vc && u!=v && u!=0 && v!=0)
         {
             uc=(letter[u]+k[u]*t)%26,u=father[u];
             vc=(letter[v]+k[v]*t)%26,v=father[v];
-            times++;
-            if (times>1000000000/q) break;
         }
         if (uc<vc) printf("<\n"); else
             if (uc==vc) printf("=\n"); else
