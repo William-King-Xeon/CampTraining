@@ -54,8 +54,6 @@ bool Top_Sort()
 			InDegree[target]--;
 			if (!InDegree[target]) q.push(target);
 		}
-
-
 	}
 
 	return (rank==0);
